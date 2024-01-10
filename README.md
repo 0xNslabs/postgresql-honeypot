@@ -23,7 +23,7 @@ cd postgresql-honeypot
 pip install twisted
 ```
 
-##Usage
+## Usage
 Run the server with optional arguments for host and port. Defaults to binding on all interfaces (0.0.0.0) at port 5432.
 
 ```bash
