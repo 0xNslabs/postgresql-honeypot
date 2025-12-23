@@ -1,22 +1,20 @@
 # Simple PostgreSQL Honeypot Server
 
 ## Introduction
-The Simple PostgreSQL Honeypot Server is a script developed for cybersecurity professionals and hobbyists to analyze PostgreSQL-based network interactions. Written in Python and leveraging the Twisted framework, this script emulates a PostgreSQL server to log unauthorized access attempts and credentials. This tool is invaluable for understanding PostgreSQL vulnerabilities and potential intrusion strategies.
+The Simple PostgreSQL Honeypot Server is a lightweight, low-interaction honeypot intended to capture and analyze PostgreSQL reconnaissance and authentication attempts. Written in Python using Twisted, it emulates enough of the PostgreSQL wire protocol to record startup parameters (e.g., user/database), password attempts, and optional raw byte streams for anomaly and potential zero-day protocol research.
 
 ## Features
-- **Low-Interaction Honeypot**: Effectively simulates a PostgreSQL server to log authentication attempts in a safe environment.
-- **Configurable Settings**: Customize host and port settings via command-line arguments for flexibility.
-- **Extensive Logging**: Captures every interaction, including usernames, passwords, and database names.
-- **Real-Time Activity Monitoring**: Instantly logs and reports PostgreSQL activities for timely anomaly detection.
-- **Educational and Research Tool**: Ideal for learning about PostgreSQL security weaknesses and network reconnaissance.
+- **Low-Interaction Honeypot**: Emulates PostgreSQL startup + authentication to capture credential attempts.
+- **Protocol-Aware Parsing**: Handles framed PostgreSQL messages (startup + auth) and common SSL probe requests.
+- **Raw Bytes Telemetry (Optional)**: Logs raw received and sent bytes in hex for deeper protocol analysis.
+- **Configurable Settings**: Bind host/port via command-line flags.
+- **Extensive Logging**: Records new connections, startup parameters, and password attempts in a single log file.
 
 ## Requirements
 - Python 3.x
-- Twisted Python library
+- Twisted (`pip install twisted`)
 
 ## Installation
-To set up the PostgreSQL honeypot server, follow these steps:
-
 ```bash
 git clone https://github.com/0xNslabs/postgresql-honeypot.git
 cd postgresql-honeypot
@@ -24,38 +22,49 @@ pip install twisted
 ```
 
 ## Usage
-Run the server with optional arguments for host and port. Defaults to binding on all interfaces (0.0.0.0) at port 5432.
+By default, raw byte logging is enabled.
 
 ```bash
-python3 psql.py --host 0.0.0.0 --port 5432
+python3 postgresql.py --host 0.0.0.0 --port 5432
 ```
 
+Disable raw byte logging (recommended if you expect high traffic and want smaller logs):
+
+```bash
+python3 postgresql.py --host 0.0.0.0 --port 5432 --no-raw-bytes-log
+```
+
+(You can also explicitly enable it with `--raw-bytes-log`.)
+
 ## Logging
-Interaction logs are stored in postgresql_honeypot.log, offering detailed records of all PostgreSQL queries, login attempts, and credentials used.
+Logs are written to `postgresql_honeypot.log` in the project directory and include:
+- New connection events (client IP/port)
+- Startup parameters (username, database)
+- Password attempts
+- Raw byte telemetry (hex), when enabled:
+  - `PostgreSQL RAW RECV: ...`
+  - `PostgreSQL RAW SEND: ...`
 
 ## Simple PostgreSQL Honeypot In Action
 ![Simple PostgreSQL Honeypot in Action](https://raw.githubusercontent.com/0xNslabs/postgresql-honeypot/main/PoC.png)
-*This image illustrates the Simple PostgreSQL Honeypot Server capturing real-time PostgreSQL queries and login attempts.*
+*Example capture of PostgreSQL login attempts.*
 
 ## Other Simple Honeypot Services
-
-Check out the other honeypot services for monitoring various network protocols:
-
-- [DNS Honeypot](https://github.com/0xNslabs/dns-honeypot) - Monitors DNS interactions.
-- [FTP Honeypot](https://github.com/0xNslabs/ftp-honeypot) - Simulates an FTP server.
-- [LDAP Honeypot](https://github.com/0xNslabs/ldap-honeypot) - Mimics an LDAP server.
-- [HTTP Honeypot](https://github.com/0xNslabs/http-honeypot) - Monitors HTTP interactions.
-- [HTTPS Honeypot](https://github.com/0xNslabs/https-honeypot) - Monitors HTTPS interactions.
-- [MongoDB Honeypot](https://github.com/0xNslabs/mongodb-honeypot) - Simulates a MongoDB database server.
-- [NTP Honeypot](https://github.com/0xNslabs/ntp-honeypot) - Monitors Network Time Protocol interactions.
-- [PostgreSQL Honeypot](https://github.com/0xNslabs/postgresql-honeypot) - Simulates a PostgreSQL database server.
-- [SIP Honeypot](https://github.com/0xNslabs/sip-honeypot) - Monitors SIP (Session Initiation Protocol) interactions.
-- [SSH Honeypot](https://github.com/0xNslabs/ssh-honeypot) - Emulates an SSH server.
-- [TELNET Honeypot](https://github.com/0xNslabs/telnet-honeypot) - Simulates a TELNET server.
+- [DNS Honeypot](https://github.com/0xNslabs/dns-honeypot)
+- [FTP Honeypot](https://github.com/0xNslabs/ftp-honeypot)
+- [LDAP Honeypot](https://github.com/0xNslabs/ldap-honeypot)
+- [HTTP Honeypot](https://github.com/0xNslabs/http-honeypot)
+- [HTTPS Honeypot](https://github.com/0xNslabs/https-honeypot)
+- [MongoDB Honeypot](https://github.com/0xNslabs/mongodb-honeypot)
+- [NTP Honeypot](https://github.com/0xNslabs/ntp-honeypot)
+- [PostgreSQL Honeypot](https://github.com/0xNslabs/postgresql-honeypot)
+- [SIP Honeypot](https://github.com/0xNslabs/sip-honeypot)
+- [SSH Honeypot](https://github.com/0xNslabs/ssh-honeypot)
+- [TELNET Honeypot](https://github.com/0xNslabs/telnet-honeypot)
 
 ## Security and Compliance
-- **Caution**: Operate this honeypot within secure, controlled settings for research and learning purposes.
-- **Compliance**: Deploy this honeypot in accordance with local and international legal and ethical standards.
+- **Caution**: Run honeypots in a controlled environment (segmented network, monitoring, no sensitive assets).
+- **Compliance**: Ensure your deployment and data retention comply with applicable laws and internal policies.
 
 ## License
-This project is available under the MIT License. See the LICENSE file for more information.
+This project is distributed under the MIT License. See `LICENSE` for details.
